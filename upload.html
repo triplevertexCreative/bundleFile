@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    #snackbar {
+      visibility: hidden;
+      min-width: 250px;
+      margin-left: -125px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      padding: 16px;
+      position: fixed;
+      z-index: 1;
+      left: 50%;
+      bottom: 30px;
+      font-size: 17px;
+    }
+
+    #snackbar.show {
+      visibility: visible;
+      -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    }
+
+    @-webkit-keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+
+    @-webkit-keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+
+      to {
+        bottom: 0;
+        opacity: 0;
+      }
+    }
+
+    @keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+
+      to {
+        bottom: 0;
+        opacity: 0;
+      }
+    }
+
+    /* Corrected height value */
+    #selectArtist {
+      width: 26%;
+      height: 38px;
+      border-radius: 5px;
+      font-size: 18px;
+      padding-left: 10px;
+    }
+
+    /* Additional styling for the form */
+    .form-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #submit {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #submit:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Snackbar for upload status -->
+  <div id="snackbar">Starting Art Uploading...</div>
+  <!-- Success and error messages -->
+  <div id="success" style="display: none; color: green; text-align: center; margin-top: 20px;">
+    Art updated Successfully.
+  </div>
+  <div id="error" style="display: none; color: red; text-align: center; margin-top: 20px;">
+    Something went wrong, please try again.
+  </div>
+
+  <!-- Form Container -->
+  <div class="form-container">
+    <form id="artUploadForm">
+      <!-- Artist Selection -->
+      <div class="form-group">
+        <label for="selectArtist">Select Artist</label>
+        <select id="selectArtist" required>
+          <option value="select">-- Select an Artist --</option>
+          <option value="ah">Anthony Hopkins</option>
+          <option value="aq">Anthony Quinn</option>
+          <option value="ras">Rascal</option>
+          <option value="sc">Scott Cleek</option>
+          <option value="lm">Lowell Mapes</option>
+          <option value="ek">Emzar Khabuliani</option>
+          <option value="ml">Marek Langowski</option>
+          <option value="cc">Curtain Call</option>
+          <option value="pp">Pablo Picasso</option>
+          <option value="sd">Salvador Dali</option>
+          <option value="jm">Joan Miro</option>
+          <option value="hm">Henri Matisse</option>
+          <option value="rvr">Rembrandt Van Rijn</option>
+          <option value="mc">Marc Chagall</option>
+          <option value="ad">Albrecht Duerer</option>
+          <option value="ho">Historical Originals</option>
+        </select>
+      </div>
+
+      <!-- Art Name -->
+      <div class="form-group">
+        <label for="artName">Art Name</label>
+        <input type="text" id="artName" name="artName" required />
+      </div>
+
+      <!-- Art URL -->
+      <div class="form-group">
+        <label for="artUrl">Art URL</label>
+        <input type="url" id="artUrl" name="artUrl" />
+      </div>
+
+      <!-- Art Medium -->
+      <div class="form-group">
+        <label for="artMedium">Art Medium</label>
+        <input type="text" id="artMedium" name="artMedium" required />
+      </div>
+
+      <!-- Art Dimensions -->
+      <div class="form-group">
+        <label for="artDemensions">Art Dimensions</label>
+        <input type="text" id="artDemensions" name="artDemensions" required />
+      </div>
+
+      <!-- Art Description -->
+      <div class="form-group">
+        <label for="artDescription">Art Description</label>
+        <textarea id="artDescription" name="artDescription" rows="4" required></textarea>
+      </div>
+
+      <!-- Art Price -->
+      <div class="form-group">
+        <label for="artPriceInput">Price ($)</label>
+        <input type="number" id="artPriceInput" name="artPriceInput" min="0" step="0.01" required />
+      </div>
+
+      <!-- Art Year -->
+      <div class="form-group">
+        <label for="artYear">Year Created</label>
+        <input type="number" id="artYear" name="artYear" min="0" required />
+      </div>
+
+      <!-- Art Signed -->
+      <div class="form-group">
+        <label for="artSigned">Is the Art Signed?</label>
+        <input type="text" id="artSigned" name="artSigned" required />
+      </div>
+
+      <!-- Art Edition -->
+      <div class="form-group">
+        <label for="artEdition">Edition</label>
+        <input type="text" id="artEdition" name="artEdition" required />
+      </div>
+
+      <!-- Image Upload -->
+      <div class="form-group">
+        <label for="selectImage">Upload Art Image</label>
+        <input type="file" id="selectImage" name="selectImage" accept="image/*" required />
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-group">
+        <button type="button" id="submit">Upload Art</button>
+      </div>
+    </form>
+  </div>
+  <script src="./bundle.js"></script>
+  <!-- Firebase and JavaScript -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+    } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytesResumable,
+      getDownloadURL,
+    } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvkcQNdGrEuAI8e2tZPaBIAU0EfqwCDc0",
+      authDomain: "higlive-81207.firebaseapp.com",
+      projectId: "higlive-81207",
+      storageBucket: "higlive-81207.appspot.com",
+      messagingSenderId: "681616647326",
+      appId: "1:681616647326:web:3ad10d98722feacc4bc78f",
+      measurementId: "G-0T3S9BW85T"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    // Initialize Cloud Firestore and get a reference to the service
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let selectedArtestValue = "select";
+    let artistName;
+
+
+    const fcmAuthToken = JSON.parse(localStorage.getItem('fcmAuthToken'))
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const fcmTextArea = document.querySelector("#fcmTextArea")
+      const sendNotificationBtn = document.querySelector("#sendNotificationBtn")
+
+
+      if (fcmAuthToken === null) getFcmAuthToken()
+      if (fcmAuthToken.expires_in < 3500) getFcmAuthToken()
+
+      // sendNotificationBtn.addEventListener('click', async () => {
+      //     const res = await sendNotification(fcmTextArea.value);
+      // })
+    })
+
+    async function getFcmAuthToken() {
+      const header = {
+        "alg": "RS256",
+        "typ": "JWT"
+      }
+
+      const payload = {
+        "iss": "firebase-adminsdk-x1dj6@higlive-81207.iam.gserviceaccount.com",
+        "aud": "https://oauth2.googleapis.com/token",
+        "scope": "https://www.googleapis.com/auth/firebase.messaging",
+        "iat": Math.floor(Date.now() / 1000), // current time in seconds
+        "exp": Math.floor(Date.now() / 1000) + 3600  // expiration time 1 hour later
+      };
+
+
+      const privateKey = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTPeaU2ps85EuC\nhZTRJHChZa0b2U4TAKavDiGVE/TkIvAd4vfh3djNIZUVcmVxHnIGjlf3zgI6DBs7\nqxxKjz5rrqlN5sbsGZ8Ru0NKqQnYep0SMqtgsQfTbOvO5Z8/t3dY19npiE1+MiTk\nbK/u/JRqXNE24mW6K7mqT7zKDO74leqoEr5Ni6O1GAc5wBkqlfQvq7WOhJX+Ys/3\ng3cwHniqO3P1P0T+tjbstaqG5lQNI4WmFQWinalHskbtpfWsK1TEs//JwE8SoEIH\nOolihJZe14zPgv51nu3eB8fLKbYssS13VwVjADp7Ig4TudLGiJe8Pm0f6v71Xrtz\nRbNmmGdLAgMBAAECggEABj5RH1sqtW0F8lCiamAKWCraJ/WPQi6FvqzLP028sjV6\nJVf8/ZcB/mYcsuqTpvlAY4M3hGJ5XF/ZOjU/e9CqBqK97EiC3p2PPwXq4j0Gxngx\nRkVrHUt+MLiKa64Lu+VfSKfwj99wcudmgb3YoVajyFT/9gBRA2ShczAyI0KomX4/\nCsg/kyAjLdQ+nONvqcSzo55dn6wF6JJLy6G2BeIvCYXHjDOw8bKRhsuqctF+QoQW\nkenDkZcDGWqhiWSyk5nhlKIfC6ALlsPayCZg+oTN3oAzcl1jpOEnp2BPO6yJpEOj\nrLxAWn6iPdUqlJGjgKmKz9F7ErdW9yEhqvvtgL1j4QKBgQD85ol9LBPyB+eOufEL\nXp4jMwTD5V8KH4v6k6z9GyetfKWVcLQgmglCsC/MjnGNUm5Yr6uzm+Beb2Aw2/h0\nfxojG6qnfYzGjk6xFujJcnkhIzMqb6LoBP3OXIKE+LSp0xTiHoeYm0ym9zDQYZFQ\nnRn2bZsxLAPtBD5hhbdYTR8xuwKBgQDV1KlSqLVfvWOxDCjaGAu4GREJ+UjB2LuP\nOI2zXLOIeXim4SiHdtiroXhaqyX/KWoYeiJI/hJyTh0YUAcdfE33C0XrCEHpJzeX\nBIThQZ49a3nVrZvj6wn9eEYjgGoJd/iNYQOeHEmdwzHQbpgLcIetrtBQ8M7tI3e8\n5yIumr4/sQKBgEaBgy05f6oHWCAraK8xxsarb5WpudBZsS2/xAegbXRpfsRl8mHw\nb8p+0iSmRbQPmiHxf94IBApv5JJakS7xTHkjOnWNhBTLEdc/OtEGsAx0Asy+6Nzk\nn1nL4rttlviNl5HezxDVow4ddidyPBAMbHOOZSjVS5blivqnS9E7VwoHAoGBAIWd\ntZCpS2zf84OWjZB6phgL0dHhq801mT4NoL4Ll0QYY4Qj/idn5EybQZGmkL+5KUrS\nRspFuVEj7ppap5eNLUrKCI6tQkJm9x2u/TmkvzSyDBexvE/Xdw6kMW/NtnTkOrRd\ngt0x3+5tIpuT//5l+uJU8mchkqwsFY48/+cPWwKBAoGAbEzw19fQKRZdrO6FR06E\nlCKjNIa+PbldNcd8wftNAS4qh+eRc53sjKlVbd3ZoanQHBvxYlBvI2VzdxNxnkWn\nXmMkDNsel9Lbj7Mu7JVM5BiefEYkGfoZ+0Qm5qPeq+T8gusE/CVL9LXoW3cLZncF\n4sOKOYZtMZOWoZ9orJ803dY=\n-----END PRIVATE KEY-----\n"
+
+      try {
+        const token = await sign(header, payload, privateKey)
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+        const urlencoded = new URLSearchParams();
+        urlencoded.append("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer");
+        urlencoded.append("assertion", token);
+
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: urlencoded,
+          redirect: "follow"
+        };
+
+        var res = await fetch("https://oauth2.googleapis.com/token", requestOptions)
+        var jData = await res.json()
+
+        localStorage.setItem('fcmAuthToken', JSON.stringify(jData))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    // Artist Selection Handler
+    document
+      .querySelector("#selectArtist")
+      .addEventListener("change", (event) => {
+        selectedArtestValue = event.target.value;
+        switch (event.target.value) {
+          case "ah":
+            artistName = "Anthony Hopkins";
+            break;
+          case "aq":
+            artistName = "Anthony Quinn";
+            break;
+          case "ras":
+            artistName = "Rascal";
+            break;
+          case "sc":
+            artistName = "Scott Cleek";
+            break;
+          case "lm":
+            artistName = "Lowell Mapes";
+            break;
+          case "ek":
+            artistName = "Emzar Khabuliani";
+            break;
+          case "ml":
+            artistName = "Marek Langowski";
+            break;
+          case "cc":
+            artistName = "Curtain Call";
+            break;
+          case "pp":
+            artistName = "Pablo Picasso";
+            break;
+          case "sd":
+            artistName = "Salvador Dali";
+            break;
+          case "jm":
+            artistName = "Joan Miro";
+            break;
+          case "hm":
+            artistName = "Henri Matisse";
+            break;
+          case "rvr":
+            artistName = "Rembrandt Van Rijn";
+            break;
+          case "mc":
+            artistName = "Marc Chagall";
+            break;
+          case "ad":
+            artistName = "Albrecht Duerer";
+            break;
+          case "ho":
+            artistName = "Historical Originals";
+            break;
+          default:
+            artistName = "";
+        }
+        console.log(
+          "===========[selectedArtestValue]========>" + selectedArtestValue
+        );
+        console.log("===========[artistName]========>" + artistName);
+      });
+
+    // Submit Button Handler
+    document
+      .querySelector("#submit")
+      .addEventListener("click", async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        // Get form values
+        const initialArtName = document.getElementById("artName").value.trim();
+        const artUrl = document.getElementById("artUrl").value.trim();
+        const artName = initialArtName;
+        const artMedium = document.getElementById("artMedium").value.trim();
+        const artDemensions = document
+          .getElementById("artDemensions")
+          .value.trim();
+        const artDescription = document
+          .getElementById("artDescription")
+          .value.trim();
+        const artPriceInput = document
+          .getElementById("artPriceInput")
+          .value.trim();
+        const artYear = document.getElementById("artYear").value.trim();
+        const artSigned = document.getElementById("artSigned").value.trim();
+        const artEdition = document.getElementById("artEdition").value.trim();
+
+        const artFirstLookCollection = collection(db, "art_firstLook");
+
+        // Get the selected image file from the input element
+        const imageInput = document.getElementById("selectImage");
+        const imageFile = imageInput.files[0];
+        console.log("=========[imageFile]=============> ", imageFile);
+
+        // Form Validation
+        if (selectedArtestValue === "select") {
+          alert("Please select the artist");
+          return;
+        } else if (!imageFile) {
+          alert("Please select an art image");
+          return;
+        } else if (artName === "") {
+          alert("Please enter the art name");
+          return;
+        } else if (artMedium === "") {
+          alert("Please enter the art medium");
+          return;
+        } else if (artDemensions === "") {
+          alert("Please enter the art dimensions");
+          return;
+        } else if (artDescription === "") {
+          alert("Please enter the art description");
+          return;
+        } else if (artPriceInput === "") {
+          alert("Please enter the price");
+          return;
+        } else if (artYear === "") {
+          alert("Please enter the art year");
+          return;
+        } else if (artSigned === "") {
+          alert("Please enter the art signed");
+          return;
+        } else if (artEdition === "") {
+          alert("Please enter the art edition");
+          return;
+        }
+
+        // Show snackbar
+        const snackbar = document.getElementById("snackbar");
+        snackbar.className = "show";
+        setTimeout(() => {
+          snackbar.className = snackbar.className.replace("show", "");
+        }, 3000);
+
+        try {
+          // Upload Image to Firebase Storage
+          const storageRef = ref(
+            storage,
+            "cms_uploads/art_firstLook/" + imageFile.name
+          );
+          const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+          // Monitor Upload Progress
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log("Upload is " + progress + "% done");
+              switch (snapshot.state) {
+                case "paused":
+                  console.log("Upload is paused");
+                  break;
+                case "running":
+                  console.log("Upload is running");
+                  break;
+              }
+            },
+            (error) => {
+              console.error("Upload failed:", error);
+              alert("Image upload failed. Please try again.");
+            },
+            async () => {
+              // Upload completed successfully, now get the download URL
+              const downloadURL = await getDownloadURL(
+                uploadTask.snapshot.ref
+              );
+              console.log("File available at", downloadURL);
+
+              // Add Document to Firestore
+              const docRef = await addDoc(artFirstLookCollection, {
+                art_ArtName: artName,
+                art_ArtistName: artistName,
+                art_CreationDate: artYear,
+                art_Description: artDescription,
+                art_Dimensions: artDemensions,
+                art_Edition: artEdition,
+                art_Medium: artMedium,
+                art_Photo: downloadURL,
+                art_price: parseFloat(artPriceInput),
+                art_Signed: artSigned,
+                is_sold: false,
+                new_art: 0,
+                art_filter: "All",
+                art_YearAndMonth: new Date(),
+              });
+              console.log("Document written with ID: ", docRef.id);
+              alert("Art updated Successfully.");
+              // Optionally, reset the form
+              document.getElementById("artUploadForm").reset();
+              // Reload the page if needed
+              // window.location.reload();
+              sendNotification({
+                message: {
+                  topic: "all",
+                  notification: {
+                    title: artName,
+                    body: artistName,
+                    image: downloadURL
+                  }
+                }
+              })
+            }
+          );
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          alert("Something went wrong, please try again.");
+        }
+
+        async function sendNotification(payload) {
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          myHeaders.append("Authorization", `Bearer ${fcmAuthToken.access_token}`);
+
+          const raw = JSON.stringify(payload);
+
+          const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+          };
+
+          try {
+            const res = await fetch("https://fcm.googleapis.com/v1/projects/higlive-81207/messages:send", requestOptions)
+            const jData = await res.json()
+            console.log(jData)
+          } catch (error) {
+            console.log(error)
+          }
+        }
+      });
+  </script>
+</body>
+
+</html>
